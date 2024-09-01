@@ -36,12 +36,13 @@ account-signup
 account-check-email
 ```
 
-### `@events` Syntax
+### `@events` syntax
 
-- Lowercase alphanumeric string
-- Maximum of 50 characters
-- Dashes are allowed; underscores are not allowed
+- Lower + upper case alphanumeric string
+- Maximum of 240 characters
+- Dashes, periods, and underscores are allowed
 - Must begin with a letter
+
 
 ### Provisioning new event functions
 
@@ -76,7 +77,7 @@ Additionally `AWS::SSM::Parameter` resources are created for every SNS Topic whi
 
 - **`/[StackName]/events/[EventName]`** with a value of the generated SNS Topic ARN
 
-> All runtime functions have the environment variable `AWS_CLOUDFORMATION` which is the currently deployed CloudFormation stack name; this combined w the runtime `aws-sdk` or `@architect/functions` can be used to lookup these values in SSM
+> All runtime functions have the environment variables `ARC_APP_NAME` and `ARC_STACK_NAME` which is the currently deployed CloudFormation stack name; this can be used by [`aws-lite`](https://aws-lite.org), `aws-sdk`, and `@architect/functions` to look up these values in SSM
 
 ---
 
@@ -172,4 +173,3 @@ function count(payload, callback) {
 
 exports.handler = arc.events.subscribe(count)
 ```
-

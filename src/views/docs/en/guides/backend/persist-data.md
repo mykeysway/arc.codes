@@ -308,8 +308,7 @@ Requiring `@architect/data` reads your app's `app.arc` manifest and generates a 
 
 The following API was generated from the `app.arc` file above:
 
-- `data._db` - an instance of `DynamoDB` from the `aws-sdk`
-- `data._doc` - an instance of `DynamoDB.DocumentClient` from the `aws-sdk`
+- `data._client` - an instance of `DynamoDB` from [`aws-lite`](https://aws-lite.org)
 - `data._name` - a helper for returning an environment appropriate table name
 - `data.people.get` - get a person
 - `data.people.query` - query people
@@ -694,7 +693,7 @@ module.exports = async function getNotes(email) {
 }
 ```
 
-Now that we've got the form, let's implement the POST handler. We'll use the [hashids](https://hashids.org/) library to help create keys for our notes.
+Now that we've got the form, let's implement the POST handler. We'll use the [`hashids`](https://hashids.org/) library to help create keys for our notes.
 
 ```bash
 cd src/http/post-notes
@@ -896,7 +895,7 @@ npm i @architect/data
 
 Now running `npx repl` opens a REPL into your Dynamo schema running locally and in-memory. If you are running the app with `npx sandbox` in another tab, it connects to that database.
 
-Try starting the REPL and running: `data.notes.scan({}, console.log)` to see all the current notes. The REPL can attach itself to the `staging` and `production` databases also by setting the appropriate `NODE_ENV` environment variable flag.
+Try starting the REPL and running: `data.notes.scan({}, console.log)` to see all the current notes. The REPL can attach itself to the `staging` and `production` databases also by setting the appropriate `ARC_ENV` environment variable flag.
 
 ---
 
@@ -939,4 +938,4 @@ let deleteNote = async function route(request) {
 exports.handler = arc.middleware(requireLogin, deleteNote)
 ```
 
-> 🎩  Tip: `data._db` and `data._doc` return instances of `DynamoDB` and `DynamoDB.DocumentClient` for directly accessing your data; use `data._name` to resolve the table names with the app name and environment prefix.
+> Use `data._name` to resolve table names with the app name and environment prefix

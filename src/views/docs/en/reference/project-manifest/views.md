@@ -1,5 +1,5 @@
 ---
-title: '@views'
+title: '<code>@views</code>'
 category: app.arc
 description: Share view code across `@http` functions
 ---
@@ -7,6 +7,7 @@ description: Share view code across `@http` functions
 Configure the location of view code.
 Architect copies view code to all HTTP GET handler functions by default.
 You can also specify only the routes you want views copied to with the `@views` pragma.
+For a full example, see [Sharing Code](../../guides/developer-experience/sharing-code).
 
 ## Syntax
 
@@ -63,29 +64,6 @@ get /raccoons
 </div>
 </arc-tab>
 
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="myapp"
-
-http=[
-  [ "get", "/" ],
-  [ "get", "/kittens" ],
-  [ "get", "/dogs" ],
-  [ "get", "/raccoons" ]
-]
-
-views=[
-  [ "get", "/kittens" ],
-  [ "get", "/raccoons" ]
-]
-
-```
-</div>
-</arc-tab>
-
 <arc-tab label=yaml>
 <h5>yaml</h5>
 <div slot=content>
@@ -109,3 +87,7 @@ views:
 
 </div>
 </arc-viewer>
+
+## Specific function opt-out
+
+A function can be [configured with a `config.arc`](../configuration/function-config#%40arc) to not have `@views` code automatically hydrated.

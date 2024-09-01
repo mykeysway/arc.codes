@@ -225,15 +225,15 @@ How would a plugin consumer use these variables at runtime in their own applicat
 ```javascript
 let arc = require('@architect/functions')
 let form = require('./form') // helper that creates a form element we can render for users to upload their assets to our S3 bucket
-let aws = require('aws-sdk')
+let awsLite = require('@aws-lite/client')
 
-exports.handler = arc.http.async(async function getIndex (req) {
+exports.handler = arc.http(async function getIndex (req) {
   const services = await arc.services()
   const { bucketName, accessKey, secretKey } = services.imagebucket // plugin variables are namespaced under the plugin name; here we assume the plugin name is called 'imagebucket' and is present in the app's app.arc file as 'imagebucket' under the @plugins section
   const region = process.env.AWS_REGION
   const upload = form({ bucketName, accessKey, secretKey, region })
-  const s3 = new aws.S3
-  const images = await s3.listObjects({ Bucket: bucketName, Prefix: 'thumb/' }).promise()
+  const aws = await awsLite()
+  const images = await aws.s3.ListObjects({ Bucket: bucketName, Prefix: 'thumb/' })
   const imgTags = images.Contents.map(i => i.Key).map(i => `<img src="${i}" />`).join('\n')
   return {
     headers: {
@@ -349,7 +349,7 @@ module.exports = {
 
 > `invokeFunction({ src, payload }, callback)`
 
-This method should be leveraged inside a plugin's [`sandbox.start`](#sandbox.start) method in order to easily invoke project Lambdas locally within an [`arc sandbox`][sandbox] local development runtime context. For example, if your plugin manages Lambdas related to some AWS service, it may be nice to provide a local development experience for consumers of your plugin. To provide a great local experience, consumers of your plugin will want to exercise your plugin-generated Lambdas when running locally. Using the combination of the [`sandbox.start`](#sandbox.start) and `invokeFunction` methods, plugin authors can implement a local development experience for plugin consumers.
+This method should be leveraged inside a plugin's [`sandbox.start`](#sandbox.start) method in order to easily invoke project Lambdas locally within an [`npx arc sandbox`][sandbox] local development runtime context. For example, if your plugin manages Lambdas related to some AWS service, it may be nice to provide a local development experience for consumers of your plugin. To provide a great local experience, consumers of your plugin will want to exercise your plugin-generated Lambdas when running locally. Using the combination of the [`sandbox.start`](#sandbox.start) and `invokeFunction` methods, plugin authors can implement a local development experience for plugin consumers.
 
 #### Arguments
 

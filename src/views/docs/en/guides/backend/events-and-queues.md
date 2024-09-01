@@ -11,7 +11,7 @@ sections:
 
 ## Overview
 
-Background tasks are a common workload and perfect for serverless environments. They reinforce event-driven architecture and allow you to perform asynchronous work across a distributed system. These functions are well suited for processes that don't require an immediate response, or are too resource intensive for a single function.
+Background tasks are a common workload and perfect for [Functional Web Apps](https://fwa.dev). They reinforce event-driven architecture and allow you to perform asynchronous work across a distributed system. These functions are well suited for processes that don't require an immediate response, or are too resource intensive for a single function.
 
 Architect has three main primitives of background functions:
 - [@events](/docs/en/reference/arc-pragmas/@events) - A pub/sub service that uses SNS.
@@ -143,7 +143,7 @@ async function yolo() {
   return { location: '/' }
 }
 
-exports.handler = arc.http.async(yolo)
+exports.handler = arc.http(yolo)
 ```
 Test it locally by running `npm start` in your terminal from the project root. Architect's Sandbox environment will emulate the same behavior once your project is deployed. Within the event function, you can split logic among code from `src/shared`.
 
@@ -239,7 +239,7 @@ From the terminal, run `arc deploy --dry-run` and take a look at `sam.yaml` in t
             },
             "ARC_APP_NAME": "arc-scheduled-app",
             "ARC_HTTP": "aws_proxy",
-            "NODE_ENV": "staging",
+            "ARC_ENV": "staging",
             "SESSION_TABLE_NAME": "jwe"
           }
         },

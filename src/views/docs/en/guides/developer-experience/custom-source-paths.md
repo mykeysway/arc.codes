@@ -7,9 +7,10 @@ Define resources in a more verbose format to configure custom Lambda source dire
 
 ## Use cases
 
-- Migrate existing repos to serverless tech
+- Migrate existing repos to the [Functional Web App pattern](https://fwa.dev)
 - Use frontend frameworks that have their own folder requirements
 - Better enable local code transpilation by pointing to generated `./dist` directories
+
 
 ## Example
 
@@ -125,48 +126,6 @@ scheduled:
       - 1
       - day
     src: "whatever/scheduled/dir/you/want"
-
-```
-</div>
-</arc-tab>
-
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app = "my-arc-app"
-
-# TOML doesn't allow mixed types in an array
-# "simple" entries are expanded
-
-# simple
-[[http]]
-[http."/foo"]
-method = "get"
-# verbose
-[[http]]
-[http."/bar"]
-method = "get"
-src = "whatever/http/dir/you/want"
-
-# simple
-[[events]]
-[events."an-event"]
-# verbose
-[[events]]
-[events."another-event"]
-src = "whatever/events/dir/you/want"
-
-# simple
-[[scheduled]]
-[scheduled."a-schedule"]
-rate = ["1", "day"]
-[[scheduled]]
-# verbose
-[scheduled."another-schedule"]
-rate = ["1", "day"]
-src = "whatever/scheduled/dir/you/want"
 
 ```
 </div>

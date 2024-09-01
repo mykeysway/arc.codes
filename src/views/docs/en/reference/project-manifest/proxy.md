@@ -1,5 +1,5 @@
 ---
-title: '@proxy'
+title: '<code>@proxy</code>'
 category: app.arc
 description: Define a forwarding URL
 ---
@@ -59,26 +59,6 @@ production https://example.biz
 </div>
 </arc-tab>
 
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="myapp"
-
-http=[
-  ["get", "/v2/*"],
-  ["post", "/v2/*"]
-]
-
-[proxy]
-testing="http://localhost:4000"
-staging="https://qa.example.biz"
-production="https://example.biz"
-```
-</div>
-</arc-tab>
-
 <arc-tab label=yaml>
 <h5>yaml</h5>
 <div slot=content>
@@ -99,6 +79,6 @@ proxy:
 </arc-tab>
 
 </div>
-<arc-viewer>
+</arc-viewer>
 
 With the above Architect file, your new app will respond to all get and post requests to `/v2/*`, and forward along requests to `/v1` to your existing API.

@@ -1,5 +1,5 @@
 ---
-title: '@queues'
+title: '<code>@queues</code>'
 category: app.arc
 description: Define SQS topics
 ---
@@ -8,9 +8,9 @@ Define SQS topics with Lambda handler functions.
 
 ### Syntax
 
-- Lowercase alphanumeric string
-- Maximum of 50 characters
-- Dashes are allowed; underscores are not allowed
+- Lower + upper case alphanumeric string
+- Maximum of 240 characters
+- Dashes, periods, and underscores are allowed
 - Must begin with a letter
 
 ### Example
@@ -32,6 +32,7 @@ myapp
 convert-image
 publish-log
 ```
+
 </div>
 </arc-tab>
 
@@ -48,21 +49,7 @@ publish-log
   ]
 }
 ```
-</div>
-</arc-tab>
 
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="myapp"
-
-queues=[
-  "convert-image"
-  "publish-log"
-]
-```
 </div>
 </arc-tab>
 
@@ -77,18 +64,20 @@ queues:
 - convert-image
 - publish-log
 ```
+
 </div>
 </arc-tab>
 
 </div>
-<arc-viewer>
+</arc-viewer>
 
-Which generates the corresponding code:
+Running `arc create` generates the following handlers:
 
 ```bash
 /
-├── queues
+├── src/queues/
 │   ├── convert-image/
 │   └── publish-log/
-└── app.arc
+├── app.arc
+└── package.json
 ```

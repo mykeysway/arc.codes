@@ -1,19 +1,16 @@
 ---
-title: '@shared'
+title: '<code>@shared</code>'
 category: app.arc
-description: Configure src/shared code
+description: Configure <code>src/shared</code> code
 ---
 
-Configure the location of shared code.
+Configure the location of shared code. For a full example, see [Sharing Code](../../guides/developer-experience/sharing-code).
 
-### Syntax
+## Syntax
 
-- Lowercase alphanumeric string
-- Maximum of 20 characters
-- Dashes are allowed; underscores are not allowed
-- Must begin with a letter
+- File path of the folder containing shared code
 
-### Example
+## Example
 
 The following configuration examples define a different folder than the default `src/shared` directory.
 
@@ -49,19 +46,6 @@ src path/to/code
 </div>
 </arc-tab>
 
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="myapp"
-
-[shared]
-src="path/to/code"
-```
-</div>
-</arc-tab>
-
 <arc-tab label=yaml>
 <h5>yaml</h5>
 <div slot=content>
@@ -77,3 +61,7 @@ shared:
 
 </div>
 </arc-viewer>
+
+## Specific function opt-out
+
+A function can be [configured with a `config.arc`](../configuration/function-config#%40arc) to not have `@shared` code automatically hydrated.

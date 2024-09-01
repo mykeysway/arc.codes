@@ -1,5 +1,5 @@
 ---
-title: '@app'
+title: '<code>@app</code>'
 category: app.arc
 description: Define the application namespace
 ---
@@ -8,10 +8,12 @@ description: Define the application namespace
 
 ## Syntax
 
-- Lowercase alphanumeric string
-- Maximum of 10 characters
-- Dashes allowed; underscores not allowed
+- Lower + upper case alphanumeric string
+- Maximum of 100 characters
+- Dashes and underscores are allowed
 - Must begin with a letter
+
+> 🪧  Changing the project's app name or [region](./aws#region) between deployments will create a new CloudFormation stack. The app namespace is used to create a stack name, which is unique to each AWS region.
 
 ## Example
 
@@ -38,16 +40,6 @@ foobaz
 {
   "app": "foobaz"
 }
-```
-</div>
-</arc-tab>
-
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="foobaz"
 ```
 </div>
 </arc-tab>

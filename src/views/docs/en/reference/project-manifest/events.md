@@ -1,19 +1,19 @@
 ---
-title: '@events'
+title: '<code>@events</code>'
 category: app.arc
 ---
 
- Define SNS topics with Lambda handler functions.
+Define SNS topics with Lambda handler functions.
 
 ## Syntax
 
-- Name
-  - Lowercase alphanumeric string
-  - Maximum of 50 characters
-  - Dashes are allowed; underscores are not allowed
-  - Must begin with a letter
+- Lower + upper case alphanumeric string
+- Maximum of 240 characters
+- Dashes, periods, and underscores are allowed
+- Must begin with a letter
 
-Events can use more verbose configuration to allow for [custom source paths](../../guides/developer-experience/custom-source-paths) in your project. Provide a  `src` for each event.
+Events can use more verbose configuration to allow for [custom source paths](../../guides/developer-experience/custom-source-paths) in your project. Provide a `src` for each event.
+
 
 ## Example
 
@@ -79,40 +79,18 @@ events:
 </div>
 </arc-tab>
 
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="myapp"
-events=[
-  "hit-counter",
-  "likes"
-]
-
-# TOML doesn't allow mixed types in an array.
-# Theoretically a "table" entry with a custom source would look like:
-
-[[events]]
-[events."custom-webhook"]
-src = "custom/source"
-```
-</div>
-</arc-tab>
-
 </div>
 </arc-viewer>
 
-Which generates the following scaffolding:
+Running `arc create` generates the following handlers:
 
 ```bash
 /
-├── custom
+├── custom/
 │   └── source/
-├── src
-│   └── events
-│     ├── hit-counter/
-│     └── likes/
+├── src/events/
+│   ├── hit-counter/
+│   └── likes/
 ├── app.arc
 └── package.json
 ```

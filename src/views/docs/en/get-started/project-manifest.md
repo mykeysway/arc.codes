@@ -12,7 +12,7 @@ Architect projects have the following significant folder structure by default:
 ├── src
 │   ├── shared ...... # Code shared by all Lambda functions
 │   ├── views ....... # Code shared by HTTP GET Lambda functions
-│   ├── macros ...... # Modify the generated CloudFormation
+│   ├── plugins ..... # Modify anything Architect does; including generated CloudFormation
 │   ├── http ........ # @http Lambda functions
 │   ├── events ...... # @event Lambda functions
 │   ├── queues ...... # @queue Lambda functions
@@ -22,7 +22,7 @@ Architect projects have the following significant folder structure by default:
 └── app.arc
 ```
 
-> All folders are **OPTIONAL**. Architect ignores any additional folders. All source paths can be reconfigured to suit unique project needs.
+> All folders are **optional**. Architect ignores any additional folders, and all source paths can be reconfigured to suit unique project needs.
 
 ---
 
@@ -38,15 +38,13 @@ Architect supports the following manifest files:
 - `arc.yml`
 - `package.json`
 - `arc.json`
-- `arc.toml`
 
-> The maintainers are considering `arc.xml`; if this is something you want let us know!
 
 ## More on `app.arc`
 
 The `app.arc` format follows a few simple rules:
 
-- whitespace is significant
+- whitespace is significant and must be spaces
 - comments start with `#`
 - a pragma starts with `@`
 - pragmas can be ordered arbitrarily
@@ -202,49 +200,6 @@ tables-streams:
   - likes
 tables-indexes:
   - likes: { date: "*String" }
-```
-
-</div>
-</arc-tab>
-
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="hello"
-
-[static]
-fingerprint=true
-
-ws=[
-  "action",
-  "connect",
-  "default",
-  "disconnect"
-]
-
-http=[
-  ["get", "/"],
-  ["get", "/likes"],
-  ["post", "/likes"],
-]
-
-events=["hit-counter"]
-
-[scheduled]
-daily-affirmation=["rate(1 day)"]
-
-[[tables]]
-
-[tables.likes]
-likeiD="*String"
-
-tables-streams=["likes"]
-
-[["tables-indexes"]]
-["tables-indexes".likes]
-date="*String"
 ```
 
 </div>

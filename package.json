@@ -1,43 +1,59 @@
 {
   "name": "@architect/arc.codes",
-  "version": "3.6.27",
+  "version": "3.13.8",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/architect/arc.codes"
+  },
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=16",
+    "npm": ">=8"
+  },
   "scripts": {
-    "dist": "./scripts/dist.sh",
     "spellcheck": "npx spellchecker --config ./scripts/spellcheckerrc.json",
-    "link-checker": "node ./scripts/link-checker.js | tap-arc",
-    "lint": "eslint src --fix",
-    "start": "sandbox",
-    "test:unit:frontend": "tape -r esm 'test/frontend/**/*.js' | tap-arc",
-    "test:unit:backend": "tape 'test/backend/**/*.js' | tap-arc",
-    "test": "npm run spellcheck && npm run lint && npm run test:unit:frontend && npm run test:unit:backend"
+    "link-checker": "node ./test/link-checker.mjs | tap-arc",
+    "lint": "npx eslint src --fix",
+    "start": "npx arc sandbox",
+    "tape": "npx tape 'test/**/*-test.mjs' | tap-arc",
+    "test": "npm run spellcheck && npm run lint && npm run tape"
   },
   "dependencies": {
-    "@architect/asap": "^4.1.0",
-    "@architect/functions": "^4.1.1",
-    "@architect/inventory": "^2.2.1",
-    "@architect/package": "^7.2.0",
-    "@architect/syntaxes": "github:architect/syntaxes#v1.2.1",
-    "@toycode/markdown-it-class": "^1.2.4",
-    "esm": "^3.2.25",
-    "front-matter": "^4.0.2",
-    "highlight.js": "^11.3.1",
-    "markdown-it": "^12.2.0",
-    "markdown-it-external-anchor": "^1.0.0",
-    "markdown-it-toc-and-anchor": "^4.2.0",
-    "slugify": "^1.6.3"
+    "@architect/asap": "^7.0.10",
+    "@architect/functions": "^8.1.6",
+    "@architect/inventory": "^4.0.5",
+    "@architect/package": "^9.0.3",
+    "@architect/plugin-node-prune": "^2.0.2",
+    "@enhance/arc-plugin-styles": "^5.0.6",
+    "@enhance/enhance-style-transform": "^0.1.2",
+    "@enhance/ssr": "^4.0.3",
+    "arcdown": "^2.3.0",
+    "markdown-it-arc-static-img": "^2.1.0",
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
-    "@architect/architect": "^9.4.2",
-    "@architect/eslint-config": "^2.0.1",
+    "@architect/architect": "^11.1.0",
+    "@architect/eslint-config": "^2.1.2",
     "@architect/spellcheck-dictionary": "github:architect/spellcheck-dictionary",
-    "eslint": "^8.4.1",
-    "linkinator": "^2.16.2",
-    "spellchecker-cli": "^4.8.1",
-    "tap-arc": "^0.1.2",
-    "tape": "^5.3.2",
-    "tiny-json-http": "^7.3.1"
+    "eslint": "^8.57.0",
+    "linkinator": "^6.1.1",
+    "spellchecker-cli": "^6.2.0",
+    "tap-arc": "^1.3.2",
+    "tape": "^5.8.1",
+    "tiny-json-http": "^7.5.1"
   },
   "eslintConfig": {
-    "extends": "@architect/eslint-config"
+    "parserOptions": {
+      "ecmaVersion": "2022",
+      "sourceType": "module"
+    },
+    "extends": "@architect/eslint-config",
+    "rules": {
+      "import/no-commonjs": "error",
+      "import/extensions": [
+        "error",
+        "ignorePackages"
+      ]
+    }
   }
 }

@@ -1,5 +1,5 @@
 ---
-title: '@http'
+title: '<code>@http</code>'
 category: app.arc
 description: Define HTTP routes
 ---
@@ -21,12 +21,14 @@ Each route is made up of two parts: HTTP verb and a route path.
   - `any`<sup>1</sup>
 
 - Route Path
-  - Dashes and underscores are not allowed
-  - Must begin with a letter
+  - Lower + upper case alphanumeric string
   - Advised maximum of 100 characters for paths
+  - Dashes, periods, and underscores are allowed
+  - Must begin with a letter
   - URL parameters are defined with a leading colon (`:`)
+  - A trailing asterisk (`*`) denotes a "catchall" (and can only be used as the final character)
 
-Routes can use more verbose configuration to allow for [custom source paths](../../guides/developer-experience/custom-source-paths) in your project. Provide a  `method` and `src` for each route:
+Routes can use more verbose configuration to allow for [custom source paths](../../guides/developer-experience/custom-source-paths) in your project. Provide a `method` and `src` for each route:
 
 - `method` - HTTP verb
 - `src` - path to the function source
@@ -54,6 +56,7 @@ get /pages
 get /pages/:dateID
 get /contact
 post /contact
+get /widgets/* # catch all unmatched routes
 # verbose custom source:
 /weather
   method get
@@ -75,6 +78,7 @@ post /contact
     ["get", "/pages/:dateID"],
     ["get", "/contact"],
     ["post", "/contact"],
+    ["get", "/widgets/*"],
     {
       "/weather": {
         "method": "get",
@@ -100,6 +104,7 @@ http:
 - get: "/pages/:dateID"
 - get: "/contact"
 - post: "/contact"
+- get: "/widgets/*"
 # verbose custom source:
 - "/weather":
     method: get
@@ -108,49 +113,25 @@ http:
 </div>
 </arc-tab>
 
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="myapp"
-http=[
-  ["get", "/"],
-  ["get", "/pages"],
-  ["get", "/pages/:dateID"],
-  ["get", "/contact"],
-  ["post", "/contact"]
-]
-
-# TOML doesn't allow mixed types in an array.
-# Theoretically a "table" entry with a custom source would look like:
-[[http]]
-[http."/weather"]
-method = "get"
-src = "custom/source"
-```
-</div>
-</arc-tab>
-
 </div>
 </arc-viewer>
 
-Which utilizes the following project directory structure:
+Running `arc create` generates the following handlers:
 
 ```bash
 /
-├── custom
+├── custom/
 │   └── source/
-├── src
-│   └── http
-│       ├── get-index/
-│       ├── get-pages/
-│       ├── get-pages-000dateID/
-│       ├── get-contact/
-│       └── post-contact/
+├── src/http/
+│   ├── get-index/
+│   ├── get-pages/
+│   ├── get-pages-000dateID/
+│   ├── get-contact/
+│   ├── get-widgets-catchall/
+│   └── post-contact/
 ├── app.arc
 └── package.json
 ```
 
-> ⚠️  Handlers generated from routes with URL parameters i.e. `/pages/:dateID`, substitute `:` for `000`.  
+> ⚠️  Handlers generated from routes with URL parameters i.e. `/pages/:dateID`, substitute `:` for `000`.
 > This is a deliberate convention to ensure valid directory names that correspond with your defined parameterized route.

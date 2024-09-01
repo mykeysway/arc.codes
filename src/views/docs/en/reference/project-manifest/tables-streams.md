@@ -1,5 +1,5 @@
 ---
-title: '@tables-streams'
+title: '<code>@tables-streams</code>'
 category: app.arc
 description: Define DynamoDB tables with streaming changes
 ---
@@ -97,30 +97,6 @@ tables-streams:
 - "a-named-table-stream":
     name: "people"
     src: "custom/source"
-```
-</div>
-</arc-tab>
-
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="testapp"
-
-[[tables]]
-[tables.people]
-pplID="*String"
-
-tables-streams=["people"]
-
-# TOML doesn't allow mixed types in an array.
-# Theoretically a "table" entry with a custom source would look like:
-
-[["tables-streams"]]
-["tables-streams"."a-named-table-stream"]
-name = "people"
-src = "custom/source"
 ```
 </div>
 </arc-tab>

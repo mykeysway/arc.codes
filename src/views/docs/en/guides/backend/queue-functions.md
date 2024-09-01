@@ -48,9 +48,9 @@ Which generates the corresponding code:
 
 ### Syntax
 
-- Lowercase alphanumeric string
-- Maximum of 50 characters
-- Dashes are allowed; underscores are not allowed
+- Lower + upper case alphanumeric string
+- Maximum of 240 characters
+- Dashes, periods, and underscores are allowed
 - Must begin with a letter
 
 ---
@@ -80,7 +80,7 @@ Additionally `AWS::SSM::Parameter` resources are created for every SQS Queue whi
 
 - **`/[StackName]/events/[QueueName]`** with a value of the generated SQS Queue URL
 
-> All runtime functions have the environment variable `AWS_CLOUDFORMATION` which is the currently deployed CloudFormation stack name; this combined w the runtime `aws-sdk` or `@architect/functions` can be used to lookup these values in SSM
+> All runtime functions have the environment variables `ARC_APP_NAME` and `ARC_STACK_NAME` which is the currently deployed CloudFormation stack name; this can be used by [`aws-lite`](https://aws-lite.org), `aws-sdk`, and `@architect/functions` to look up these values in SSM
 
 ### Deploy
 
@@ -132,5 +132,3 @@ def handler(request, context):
   arc.queues.publish(name='account-signup', payload={'ok':True})
   return {'statusCode': 201}
 ```
-
-

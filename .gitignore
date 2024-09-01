@@ -1,9 +1,10 @@
-.arc-env
 .DS_Store
-**/static.json
 node_modules
-package-lock.json
+scratch
 sam.json
 sam.yaml
-scratch
+public/static.json
+**/static.json
 src/http/get-docs-000lang-catchall/highlight/
+.enhance
+src/shared/enhance-styles

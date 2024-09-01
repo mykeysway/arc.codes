@@ -1,5 +1,5 @@
 ---
-title: '@scheduled'
+title: '<code>@scheduled</code>'
 category: app.arc
 description: Define EventBridge schedule expressions
 ---
@@ -8,14 +8,11 @@ Define EventBridge schedule expressions with Lambda handler functions.
 
 ### Syntax
 
-- Name
-  - Lowercase alphanumeric string
-  - Maximum of 20 characters
-  - Dashes are allowed; underscores are not allowed
-  - Must begin with a letter
-
-- Interval
-  - A valid `rate` or `cron` expression ([more info here](https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html))
+- Lower + upper case alphanumeric string
+- Maximum of 240 characters
+- Dashes, periods, and underscores are allowed
+- Must begin with a letter
+- Followed by a valid `rate` or `cron` expression ([more info here](https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html))
 
 Scheduled functions can use more verbose configuration to allow for [custom source paths](../../guides/developer-experience/custom-source-paths) in your project. Provide a `rate` or `cron` and `src` for each event.
 
@@ -87,42 +84,17 @@ scheduled:
 </div>
 </arc-tab>
 
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="myapp"
-
-[scheduled]
-daily-update-buddy="rate(1 day)"
-friyay-only="cron(0 15 ? * FRI *)"
-
-# TOML doesn't allow mixed types in an array.
-# Theoretically a "table" entry with a custom source would look like:
-
-[scheduled."annual-review"]
-rate = ["1", "year"]
-src = "custom/source"
-```
-
-</div>
-</arc-tab>
-
 </div>
 </arc-viewer>
 
-
-Which generates the following scaffolding:
+Running `arc create` generates the following handlers:
 
 ```bash
 /
-├── custom
-│   └── source/
-├── src/
-│   └── scheduled/
-│       ├── daily-update-buddy/
-│       └── friyay-only/
+├── custom/source/
+├── src/scheduled/
+│   ├── daily-update-buddy/
+│   └── friyay-only/
 ├── app.arc
 └── package.json
 ```

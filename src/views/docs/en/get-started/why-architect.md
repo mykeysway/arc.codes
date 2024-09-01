@@ -4,11 +4,13 @@ category: Get started
 description: Why is Architect important to you?
 ---
 
-> Architect provides everything you need to build massively scalable serverless apps with low code, clear and terse config, and zero ceremony
+> Architect provides everything you need to build massively scalable [Functional Web Apps (FWAs)](https://fwa.dev) with low code, clear and terse config, and zero ceremony
+
 
 ## The best developer experience
 
-Going serverless is fraught with complex vendor arcana and market noise. This is where Architect comes in. Architect is an opinionated developer experience (DX) for building database backed web apps with AWS. We remove all the noise and friction to building serverlessly. We prioritize speed with fast local dev, smart configurable defaults and flexible Infrastructure as Code. And then we get out of your way so you can focus on business logic instead of glue code and only pay for services while in use, on-demand, and otherwise _scale to zero_.
+Building a functional web app can be fraught with complex vendor arcana and market noise. This is where Architect comes in. Architect is an opinionated developer experience (DX) for building database backed web apps with AWS. We remove all the noise and friction to building FWAs. We prioritize speed with fast local dev, smart configurable defaults and flexible Infrastructure as Code. And then we get out of your way so you can focus on business logic instead of glue code and only pay for services while in use, on-demand, and otherwise _scale to zero_.
+
 
 ### Work locally
 
@@ -16,7 +18,7 @@ Developers need to work locally, to debug, test, and preview code before deployi
 
 ### Infrastructure as Code
 
-At its heart Architect is an [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC) framework. Architect defines a high level manifest file, in multiple open text formats, and turns formerly complex cloud infrastructure provisioning into a build artifact. You define the cloud infrastructure your application code requires and check that manifest into version control so infra and code are always aligned and deterministic. Architect compiles manifest code into AWS CloudFormation and deploys it. Architect supports a native text file format `app.arc` in addition to popular formats: `package.json`, `arc.json`, `arc.yaml` and `arc.toml`. Teams can choose the dialect that works best for them.
+At its heart Architect is an [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC) framework. Architect defines a high level manifest file, in multiple open text formats, and turns formerly complex cloud infrastructure provisioning into a build artifact. You define the cloud infrastructure your application code requires and check that manifest into version control so infra and code are always aligned and deterministic. Architect compiles manifest code into AWS CloudFormation and deploys it. Architect supports a native text file format `app.arc` in addition to popular formats: `package.json`, `arc.json`, and `arc.yaml`. Teams can choose the dialect that works best for them.
 
 ### Secured to least privilege by default
 

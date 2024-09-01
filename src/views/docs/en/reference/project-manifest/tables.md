@@ -1,7 +1,7 @@
 ---
-title: '@tables'
+title: '<code>@tables</code>'
 category: app.arc
-description: Define DynamoDB tables
+description: Define DynamoDB database tables
 ---
 
 Define [DynamoDB][ddb] tables with optional:
@@ -25,11 +25,11 @@ Additionally, database changes can be streamed to a function with the [`@tables-
 
 ### Table name syntax
 
-- Lowercase alphanumeric string
+- Lower + upper case alphanumeric string
 - Between 3 and 255 characters
-- Dashes are allowed
-- Underscores are not allowed
+- Dashes, periods, and underscores are allowed
 - Must begin with a letter
+
 
 ### Table structure syntax
 
@@ -118,31 +118,6 @@ fleeting-thoughts
     }
   ]
 }
-```
-</div>
-</arc-tab>
-
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-app="testapp"
-
-[[tables]]
-
-[tables.people]
-pplID="*String"
-
-[tables.cats]
-pplID="*String"
-catID="**String"
-encrypt=true
-PointInTimeRecovery=true
-
-[tables.fleeting-thoughts]
-pplID="*String"
-expires="TTL"
 ```
 </div>
 </arc-tab>

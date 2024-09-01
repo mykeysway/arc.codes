@@ -1,10 +1,10 @@
 ---
-title: '@aws'
+title: '<code>@aws</code>'
 category: app.arc
 description: Define AWS specific configuration.
 ---
 
-Define AWS specific configuration for an entire project or [per function](../configuration/function-config).
+Define AWS specific configuration for an entire project or [per function](../configuration/function-config#%40aws).
 
 ## Syntax
 
@@ -13,33 +13,37 @@ Define AWS specific configuration for an entire project or [per function](../con
 [AWS region ID](https://docs.aws.amazon.com/general/latest/gr/rande.html) where the project will be deployed.
 - Defaults to `us-west-2`
 
+
 ### `profile`
 
 Local AWS profile name to use with this project, as defined in your [local AWS configuration](../../get-started/detailed-aws-setup#credentials).
 - Can also be specified in `AWS_PROFILE` environment variable
 - Required to deploy to AWS
 
+
 ### `runtime`
 
-Lambda runtime, as defined by the [`lambda-runtimes`](https://github.com/architect/lambda-runtimes/blob/cad3b158968805a01103e47c08da48132620594e/cjs/index.js) library.
+[Lambda runtime](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html), as defined by the [`lambda-runtimes`](https://github.com/architect/lambda-runtimes) library.
 
-> ℹ️  Local [Sandbox](../cli/sandbox) support is currently limited to Node.js, Python, and Ruby.
+> Note: please refer to the [runtime support matrix](/docs/en/get-started/runtime-support) for local [Sandbox](../cli/sandbox) support
 
-| Runtime | Versions     | Example            | Alias<sup>1</sup>         |
-|---------|--------------|--------------------|---------------------------|
-| Node.js | 12.x, 14.x   | `nodejs14.x`       | `node` `nodejs` `node.js` |
-| Python  | 3.6 - 3.9    | `python3.9`        | `python` `py`             |
-| Ruby    | 2.7          | `ruby2.7`          | `ruby` `rb`               |
-| .NET    | 3.1          | `dotnetcore3.1`    | `dotnet` `.net`           |
-| Go      | 1.x          | `go1.x`            | `golang` `go`             |
-| Java    | 8, 8.al2, 11 | `java11`           | `java`                    |
+| Runtime | Versions                              | Example       | Alias<sup>1</sup>         |
+|---------|---------------------------------------|---------------|---------------------------|
+| Node.js | 20.x (default), 18.x, 16.x            | `nodejs20.x`  | `node` `nodejs` `node.js` |
+| Python  | 3.12 (default), 3.11, 3.10, 3.9, 3.8  | `python3.12`  | `python` `py`             |
+| Ruby    | 3.2 (default)                         | `ruby3.2`     | `ruby` `rb`               |
+| .NET    | 6 (default), 7                        | `dotnet6`     | `dotnet` `.net`           |
+| Java    | 21 (default), 17, 11, 8.al2, 11       | `java21`      | `java`                    |
 
-1. Runtime aliases always default to the latest runtime version; `py` is effectively `python3.9`.
+1. Runtime aliases always use Architect's current default runtime version (e.g. `py` is effectively `python3.12`).
+
 
 ### `bucket`
 
 Bucket name (in same region) for CloudFormation deployment artifacts.
-- If not specified, a secure deployment bucket will be automatically created
+
+If not specified, a secure deployment bucket will be automatically created.
+
 
 ### `policies`
 
@@ -51,29 +55,41 @@ Configuring one or more policies will completely remove all of Architect's defau
 
 > Note: `architect-default-policies` is an internal Architect framework setting based on the least-privilege permissions specific to your project. It is not a managed / public IAM policy, and will not be found in your AWS console.
 
+
 ### `layers`
 
 Configure Lambda function `layers` with max 5 Lambda Layer ARNs. Lambda Layers must be in the same region as they are deployed.
 
-### `apigateway`
-
-API Gateway API type, can be one of:
-  - `http` (default) - `HTTP` API + Lambda payload format version 2.0
-  - `httpv2` – aliased of `http`
-  - `httpv1` - `HTTP` API + Lambda payload format version 1.0
-  - `rest` - `REST` API + original API Gateway payload format
 
 ### `architecture`
 
-Lambda [CPU Architecture](https://docs.aws.amazon.com/lambda/latest/dg/foundation-arch.html) of your functions. (Added in Architect 9.1)
-  - `x86_64` (default) - 64-bit x86 architecture
-  - `arm64` - (only available in certain AWS regions) 64-bit ARM architecture
+Lambda [CPU Architecture](https://docs.aws.amazon.com/lambda/latest/dg/foundation-arch.html) of your functions.
+- `arm64` (default) - 64-bit ARM architecture
+- `x86_64` - 64-bit x86 architecture
+
+
+### `storage`
+
+Lambda ephemeral storage (a "scratch" file system in `/tmp` for each Lambda). A number between `512` (default) - `10240` in MB.
+
+
+### `apigateway`
+
+API Gateway API type, can be one of:
+- `http` (default) - `HTTP` API + Lambda payload format version 2.0
+- `httpv2` – alias of `http`
+- `httpv1` - `HTTP` API + Lambda payload format version 1.0 (aka `REST`)
+- `rest` - `REST` API + original API Gateway payload format (note: only supported when using the [`plugin-rest-api`](https://github.com/architect/plugin-rest-api) plugin)
+
+> Note: if configuring `apigateway rest` mode, you must use the `@architect/plugin-rest-api` in order to deploy your `REST` API to AWS
+
 
 ## Environment Variables
 
 Alternatively, if you want a less granular approach, you can declare your preferred region and profile in your shell config like `.bashrc` ([more information here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)).
 
 If you have AWS exports in your shell config and `@aws` specified in your `app.arc` project, the `@aws` section will win.
+
 
 ## Examples
 
@@ -91,6 +107,7 @@ For example, to deploy Ruby to the northern California AWS AZ, with your AWS `wo
 runtime ruby
 region us-west-1
 profile work
+storage 5000 # in MB
 policies
   S3CrudPolicy
   architect-default-policies
@@ -108,23 +125,14 @@ policies
   "aws": {
     "runtime": "ruby",
     "region": "us-west-1",
-    "profile": "work"
+    "profile": "work",
+    "storage": 5000,
+    "policies": [
+      "S3CrudPolicy",
+      "architect-default-policies"
+    ]
   }
 }
-```
-
-</div>
-</arc-tab>
-
-<arc-tab label=toml>
-<h5>toml</h5>
-<div slot=content>
-
-```toml
-[aws]
-runtime="ruby"
-region="us-west-1"
-profile="work"
 ```
 
 </div>
@@ -140,6 +148,11 @@ aws:
   runtime: ruby
   region: us-west-1
   profile: work
+  storage: 5000
+  architecture: arm64
+  policies:
+      - S3CrudPolicy
+      - architect-default-policies
 ```
 
 </div>

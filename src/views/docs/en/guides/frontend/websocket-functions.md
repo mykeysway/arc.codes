@@ -18,7 +18,8 @@ We accomplish this by using [API Gateway](https://docs.aws.amazon.com/apigateway
 
 Architect provides endpoints pre-configured with Lambda handler functions deployed and ready to iterate, complete with local development and isolated staging and production environments.
 
-### When and why would someone want to use a serverless WebSocket?
+
+### When and why would someone want to use a cloud function WebSocket?
 
 - Your app needs real time push of data; this includes (but is not limited to) web browsers. (Many things speak the `wss` protocol!)
 - You desire a stateless runtime execution model for your app layer; your app receives WebSocket events, processes them, possibly communicates back to socket clients by posting through an HTTP API, and then terminates execution
@@ -31,6 +32,7 @@ Architect provides endpoints pre-configured with Lambda handler functions deploy
 [Custom Routes](#custom-routes)
 [Event Payload](#event-payload)
 [Examples](#examples)
+
 
 ## Getting started
 
@@ -122,6 +124,7 @@ WebSocket functions are always invoked with an `event` payload that contains use
 - `event.requestContext.apiId` the currently executing WebSocket `apiId`
 - `event.body` the message payload
 
+
 ### Publish event payload (JSON) to a WebSocket client
 
 Node
@@ -131,7 +134,7 @@ let arc = require('@achitect/functions')
 
 await arc.ws.send({
   id: event.context.connectionId
-  payload: {action: 'ping'},
+  payload: { action: 'ping' },
 })
 ```
 
@@ -140,7 +143,7 @@ Ruby
 ```ruby
 require 'architect/functions'
 
-Arc::WS.send id: event.context.connectionId, payload: {action: 'ping'}
+Arc::WS.send id: event.context.connectionId, payload: { action: 'ping' }
 ```
 
 Python
@@ -148,7 +151,7 @@ Python
 ```python
 import arc.ws
 
-arc.ws.send(id=event.context.connectionId, payload={'action': 'ping'})
+arc.ws.send(id=event.context.connectionId, payload={ 'action': 'ping' })
 ```
 
 ---
@@ -225,10 +228,11 @@ msg.addEventListener('keyup', function(e) {
   if (e.key == 'Enter') {
     let text = e.target.value // get the text
     e.target.value = ''       // clear the text
-    ws.send(JSON.stringify({text}))
+    ws.send(JSON.stringify({ text }))
   }
 })
 ```
+
 
 ### Send Events from Lambda
 
@@ -241,8 +245,8 @@ let arc = require('@architect/functions')
 
 exports.handler = async function connected(event) {
   let id = event.requestContext.connectionId
-  let payload = {ok: true, ts: Date.now()}
-  await arc.ws.send({id, payload})
-  return {statusCode: 200}
+  let payload = { ok: true, ts: Date.now() }
+  await arc.ws.send({ id, payload })
+  return { statusCode: 200 }
 }
 ```

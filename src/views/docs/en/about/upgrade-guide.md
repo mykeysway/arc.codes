@@ -4,6 +4,8 @@ category: About
 description: This document covers upgrading from previous versions of Architect
 sections:
   - Overview of Architect versions
+  - Architect 10 &rarr; 11
+  - Architect 9 &rarr; 10
   - Architect 8 &rarr; 9
   - Architect 7 &rarr; 8
   - Architect 6 &rarr; 7
@@ -18,9 +20,23 @@ This document covers upgrading from previous versions of Architect.
 
 As a general philosophy, Architect's core maintainers endeavor to minimize the frequency and impact of breaking changes wherever possible; in many cases, major releases may have no impact on existing applications.
 
+## Releases
+
+### Architect 11 (Cadborosaurus)
+
+Architect 11 (Cadborosaurus) is a speed, stability, and security release, marking the first version utilizing [`aws-lite`](https://aws-lite.org) instead of the AWS SDK. Architect 11 now installs significantly faster, with a size on disk of roughly 49 MB, down from 191 MB, a 74% reduction. Arc can now also deploy in seconds with *fast mode*.
+
+Because Architect no longer includes the AWS SDK, any projects that use it to make calls to AWS services must install the AWS SDK as a dependency. [See more below](#architect-10-&rarr;-11).
+
+
+### Architect 10 (Taniwha)
+
+Architect 10 (Taniwha) is a major feature release, introducing the Architect plugins API, and cleaning up internal legacy code, module APIs, and other bits from earlier on in Architect's history. While few of these changes should impact existing projects, users should still [see below for potential impacts to upgrading](#architect-9-&rarr;-10).
+
+
 ### Architect 9 (La Chupacabra)
 
-Architect 9 (La Chupacabra) is primarily a maintenance release, dropping support for Node.js 10.x (now end-of-life) and Node.js 12.x,  and removing support for Architect 5 (and lower).
+Architect 9 (La Chupacabra) is primarily a maintenance release, dropping support for Node.js 10.x (now end-of-life) and Node.js 12.x, and removing support for Architect 5 (and lower).
 
 [See below for potential impacts to upgrading](#architect-8-&rarr;-9).
 
@@ -61,8 +77,10 @@ Architect 4 (Yeti) introduced generic, dependency-free HTTP functions, enhanced 
 
 ---
 
-### Topics
+## Upgrade guides
 
+- [Architect 9 &rarr; 10](#architect-10-&rarr;-11)
+- [Architect 9 &rarr; 10](#architect-9-&rarr;-10)
 - [Architect 8 &rarr; 9](#architect-8-&rarr;-9)
 - [Architect 7 &rarr; 8](#architect-7-&rarr;-8)
 - [Architect 6 &rarr; 7](#architect-6-&rarr;-7)
@@ -70,6 +88,144 @@ Architect 4 (Yeti) introduced generic, dependency-free HTTP functions, enhanced 
 - [Architect 4 &rarr; 5](#architect-4-&rarr;-5)
 - [Architect Functions](#architect-functions)
 - [Architect Data](#architect-data)
+
+---
+
+## Architect 10 &rarr; 11
+
+Architect 11 (Cadborosaurus) is a speed, stability, and security release, marking the first version utilizing [`aws-lite`](https://aws-lite.org) instead of the AWS SDK.
+
+Architect 11 now installs significantly faster, with a size on disk of roughly 49 MB, down from 191 MB (a 74% reduction!). Arc also no longer makes use of the AWS CLI, and can now also deploy in seconds with *fast mode*.
+
+
+### Breaking changes
+
+- Architect no longer includes any versions of AWS SDK as dependencies. Any projects that use AWS SDK v2 or v3 to make calls to AWS services must install it as a dependency.
+  - Remedy: run the following command in your project, depending on the AWS SDK version(s) you need:
+    - AWS SDK v2 - `npm i -D aws-sdk`
+    - AWS SDK v3 - `npm i -D @aws-sdk/client-apigatewaymanagementapi @aws-sdk/client-dynamodb @aws-sdk/client-s3 @aws-sdk/client-sns @aws-sdk/client-sqs @aws-sdk/client-ssm @aws-sdk/lib-dynamodb`
+  - Alternative remedy: begin transitioning to [`aws-lite`](https://aws-lite.org), which is 2-5x faster, has nice docs, excellent errors, support for types, and is fully open to community contribution
+- Due to the upcoming deprecation of `nodejs16.x` and AWS SDK v2 in Lambda, Architect now defaults to `nodejs20.x`
+  - Remedy: if you still use SDK v2 in your Lambdas by default, add `@aws runtime nodejs16.x` to your [project manifest](https://arc.codes/docs/en/reference/project-manifest/aws#runtime) or any relevant [config.arc files](https://arc.codes/docs/en/reference/configuration/function-config)
+  - However, it must be noted that Lambda is retiring `nodejs16.x` with AWS SDK v2 later this year; as above, we are now encouraging folks to transition to `aws-lite`, where possible
+- `arm64` is now the default Lambda architecture
+  - This change only impacts projects that utilize native modules or Lambda layers with binaries; projects that make use of regular Node.js packages will not be impacted by this change
+  - Remedy: if your native modules / layers aren't yet available for `arm64` Linux, or you just aren't certain about the state of your dependency tree, add `runtime x86_64` to the `@aws` pragma in your project manifest
+- Removed support for Node.js 14.x (now EOL, and no longer available to created in AWS Lambda)
+- Resolved mismatch between `RouteSelectionExpression` in deployed Architect apps vs. locally in Sandbox
+  - The `RouteSelectionExpression` is now `$request.body.action`, meaning WebSocket code running locally can now be the same as in production
+  - Remedy: if you use custom `@ws` handlers and invoke them in Sandbox, you can remove conditional logic renaming the `message` property to `action`. Everything should now use `action`, like so: `ws.send(JSON.stringify({ action: 'custom-endpoint', ... }))`
+
+
+### Notable changes
+
+- Added experimental `--fast` flag, which ships project to AWS without waiting around to determine if the deployment completed successfully. Use with care!
+- Architect no longer requires the AWS CLI, nor Python. So if you'd like to remove either or both, feel free!
+- Deploy no longer writes `sam.json` + `sam.yaml` files upon each deploy
+  - However, if you do want to see the `sam.json` being deployed, use the `--dry-run` or `--debug|-d` CLI flags
+
+
+### Compatibility with `@architect/functions`
+
+Arc 11 also ships with Architect Functions 8, which also makes use of `aws-lite`. This is an important upgrade, as version 8 no longer suffers from 500-1000ms cold starts due to instantiating the AWS SDK. Version 8 is now between 2-5x faster, and uses 2-4x less memory.
+
+Version 8 also introduces two important breaking changes noted below; while we do not recommend using use version 7 due to the deprecation of AWS SDK v2 and ongoing performance issues with AWS SDK v3, you may continue to do so as long as the AWS SDK is installed in your project's dependencies.
+
+Additionally, you can use Architect Functions 8 in Arc 10 projects.
+
+
+#### DynamoDB client instantiation
+
+Because the AWS SDK can no longer be assumed to be installed in Architect projects, `@architect/functions` offers a new `aws-lite`-based DynamoDB client (`_client`), and provides an opt-in affordance for using AWS SDK-based DynamoDB clients:
+- If you only rely on the DocumentClient (`data._doc`), you may want to just try using the new [`@aws-lite/dynamodb`](https://aws-lite.org/services/dynamodb)-based `_client`, which is functionally the same, but significantly faster
+- Code depending on `data._db` or `data._doc` must now instantiate with the `awsSdkClient` boolean option, like so: `await arc.tables({ awsSdkClient: true })`
+  - Using the `awsSdkClient` option necessitates having AWS SDK v2 or v3 installed, according to your Lambda's Node.js version (v2 for 16.x, v3 for 20.x+)
+
+
+#### Error semantics
+
+Similar to how AWS SDK v3 introduced breaking changes to error semantics from AWS SDK v2, `aws-lite` errors may also be different. We've taken efforts to ensure the maximum degree of compatibility with both AWS SDK v2 and v3 errors, but they may still vary slightly.
+- This only really applies if your error handling relies on specific error properties or values
+- If you just `console.log()` your errors, you will be totally fine, and the quality of the errors you get via `aws-lite` will most likely improve with this change
+- Note: if you're an AWS SDK v2 user considering migrating to v3, error incompatibility will apply even more so; v3 errors are incompatible with v2, whereas `aws-lite` errors attempt to be compatible with both SDK v2 + v3 where possible
+
+
+#### Backward compatibility
+
+Again, it should be noted that `@architect/functions` 8 is not a required upgrade; you may continue using `@architect/functions` 7 so long as the AWS SDK is installed in your project's dependencies.
+
+---
+
+## Architect 9 &rarr; 10
+
+Architect 10 (Taniwha) is a major feature release, introducing the Architect plugins API, and cleaning up internal legacy code, module APIs, and other bits from earlier on in Architect's history.
+
+Most of Architect 10's breaking changes were internal; most users should not encounter breaking changes when upgrading Architect to v10, and Functions + ASAP to v5.
+
+
+### Removed
+
+- Removed the `package` command, which was no longer able to represent the final state of Architect projects
+  - Remedy: its (improved) replacement is now: `deploy --eject`
+- Removed support for legacy `.arc-env` env files (initially deprecated in late 2020)
+  - Remedy: if you are still using a `.arc-env` file, please move your [local env vars to `prefs.arc`](https://arc.codes/docs/en/reference/configuration/local-preferences#%40env) or [`.env`](https://arc.codes/docs/en/reference/configuration/local-preferences#.env-file-support)
+- [Removed `toml` support](https://github.com/architect/architect/discussions/1294) (e.g. `arc.toml`)
+- Removed built-in support for the `REST` API Gateway. Support is moved to an external plugin, [`plugin-rest-api`](https://github.com/architect/plugin-rest-api).
+
+
+### Breaking changes
+
+- The beta plugins API has been largely refactored; wherever possible, hooks from the beta API have been ported to the final shipping plugin API. However, many things changed, so if you authored plugins against the beta API, please refer to the [new plugin documentation](https://arc.codes/docs/en/reference/plugins/api) to ensure compatibility
+- Due to ongoing issues with unpredictable behavior with certain external libraries, Architect no longer makes use of the `NODE_ENV` environment variable, nor is it automatically added to deployed apps.
+  - Remedy: if your code relies on Architect automatically populating `NODE_ENV`, you should add it to your userland environment variables, like so: `npx arc env --add --env testing NODE_ENV testing` (and again for `staging` + `production`)
+- All support for bare CLI flags has been removed from Architect commands
+  - All functionality has been retained, but now proper flags must be used
+  - Example: `npx arc deploy production` should now be `npx arc deploy --production`
+- Sandbox's new automatic port selection should frequently actually improve and un-break common uses of Sandbox in testing. However, if your tests or tools rely on Sandbox's default ports (e.g. `3334` for `@events`), you will need to make some minor changes:
+  - Remedy: Lambda invocations in Sandbox are now passed an environment variable called `ARC_SANDBOX`, which contains a JSON serialized `ports` property; use this property to obtain the currently configured port for a given service
+  - Should you need to have consistent, non-automatically-selecting ports for Sandbox's internal services, use Sandbox's standard means for explicitly defining port configuration; **do not merely rely on Sandbox's default ports**, as they should be expected to change at any time
+- Breaking change: legacy `@tables` / `@tables-streams` folders (`src/tables/...` and `src/streams/...`) are now deprecated in favor of `src/tables-streams/...`
+  - Remedy: existing stream functions can simply have their folders renamed to `src/tables-streams/{name}` (or use a custom `src` property on them if you'd prefer to keep your existing folder structure)
+- Breaking change: `@indexes` is now fully deprecated
+  - Remedy: simply change the `@indexes` pragma name to `@tables-indexes`; no other changes are required
+- Breaking change: moved legacy API Gateway REST API provisioning to `@architect/plugin-rest-api` plugin; to continue deploying REST APIs with Architect:
+  - Remedy: install `@architect/plugin-rest-api` to your project's dependencies, add `@plugins architect/plugin-rest-api` and `@aws apigateway rest` to your project manifest
+
+
+### Internal breaking changes
+
+The following internal changes should not have any impact on Architect users should Architect v10 be paired with Functions v5, but just in case anyone used these somewhat more obscure internal features, environment variables, etc., we'll enumerate the changes here:
+
+- All Architect modules' CLI APIs have been revamped, and now accept an object containing Inventory
+- `@architect/env`'s module API has been significantly revamped; if you use `env` as a module, please refer to its documentation
+- The following internal Architect environment variables are no longer used: `ARC_CLOUDFORMATION`, `ARC_HTTP`, `ARC_SANDBOX_PATH_TO_STATIC`
+- Inventory structure changes:
+  - `inv._project.src` now represents the default source tree folder (e.g. `$cwd/src`), while `_project.cwd` (new) refers to the current working directory of the project
+  - `inv._project.env` is now an object populated by three properties: `local`, `plugins`, and `aws`, each reflecting the env vars found for each context's three environments (`testing`, `staging`, `production`)
+  - `lambda.handlerFunction` has been renamed to `lambda.handlerMethod`
+- Architect now prioritizes the AWS region passed via Inventory params over the `AWS_REGION` env var; in practice this should have no practical effect for most users
+- Per Deno's guidelines, Architect now prioritizes `mod.ts|js` handlers in Deno Lambdas over the other supported files; in practice this should have no practical effect unless your handler has both an `index.ts|js` file and a `mod.ts|js` file in its root
+- Deprecated `ARC_SANDBOX_ENABLE_CORS` env var option from Sandbox
+  - Remedy: this option predates Architect's support of `options`, which landed in version 8; handling options requests with an `options` (or `any`) handler is the preferred approach to handling CORS
+- Internal change: stopped optimistically populating default `arc-sessions` + `data` tables in Sandbox
+  - This was a very obscure and quirky holdover behavior from early Architect that differed Sandbox from live AWS behavior
+  - Remedy: realistically no one ever actually used this feature in production, because to do so would have necessitated defining an `arc-sessions` or `data` table in your project manifest; that said, if you experimented with these default DynamoDB tables and want to use them in production, simply add them to your `@tables` pragma
+
+
+### Important non-breaking change
+
+In a future major release, Architect will deprecate all non-namespaced environment variables. For now, Architect prefers the namespaced versions of the same env var, but will support both; some examples:
+
+- `ARC_HTTP_PORT` is preferred to `PORT` in Sandbox
+- `ARC_SESSION_TABLE_NAME` is preferred to `SESSION_TABLE_NAME` in Sandbox
+
+If you key on or use non-namespaced Architect env vars, we suggest changing them over to their namespaced equivalents as soon as is convenient.
+
+
+### Compatibility with `@architect/functions`
+
+Due to internal breaking changes, `@architect/functions` v4 and below is incompatible with Architect 10.
+- Remedy: upgrade `@architect/functions` to v5 or above; all existing functionality has been retained, [see more here](#architect-functions)
 
 ---
 
@@ -646,7 +802,7 @@ exports.handler = arc.http(log, route)
 1. Open up IAM in the AWS Console
 2. Select **Roles** &rarr; **arc-role**
 3. Click **Attach Policies**
-4. Select **AWSLambdaSQSQueueExecutionRole**
+4. Select **`AWSLambdaSQSQueueExecutionRole`**
 5. Click **Attach Policy**
 
 Now existing functions can publish to SQS queues.
@@ -659,9 +815,9 @@ If the command line is more your style you can upgrade with the following:
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole --role-name arc-role
 ```
 
-**With NodeJS**
+**With Node.js**
 
-If you prefer to script this upgrade you can use the NodeJS `aws-sdk`:
+If you prefer to script this upgrade you can use the Node.js `aws-sdk`:
 
 ```javascript
 let aws = require('aws-sdk')
@@ -680,36 +836,36 @@ iam.attachRolePolicy({
 
 ### Overview
 
-`@architect/functions` runtime helper library will continue to be actively maintained, and is forwards compatible with Architect 6 &rarr; 7 upgrades, and most Architect 5 &rarr; 6 upgrades.
+`@architect/functions` runtime helper library is actively maintained. Version 5 is required for Architect 10+. Users on Architect 6 - 9 should continue to use Functions v4 (which will work in perpetuity, but not be separately maintained).
 
 The Architect Functions module is now also available as a dependency for [Ruby](https://github.com/architect/arc-functions-ruby) and [Python](https://github.com/architect/arc-functions-python) functions.
 
 
 ### Changes
 
+- `arc.http.express` was removed in February 2022, and we recommend using `@vendia/serverless-express` or `serverless-http` as replacement modules
+- `arc.http.proxy` (previously `arc.proxy`) was deprecated in July 2021, and is now the standalone `@architect/asap` module
+  - Its methods are functionally the same
 - `arc.http.middleware` was deprecated in August 2019, and is now `arc.http.async`
   - These methods are functionally the same
 - `arc.http.helpers.static` was deprecated in June 2019, and is now `arc.static`
   - These methods are functionally the same
   - Due to some under-the-hood changes, if you use `arc.http.helpers.static` or `arc.static`, you will need to upgrade to `@architect/functions` version `^3.3.4` (or greater) in Architect 6
-- `arc.proxy` was deprecated in May 2020, and is now `arc.http.proxy`
-  - These methods are functionally the same
-
-In all three cases, these are functionally the same. The old aliases will remain for a while to come, but we suggest moving any deprecated calls over to their new equivalents by mid-2020.
 
 
-### Does `@architect/functions` work in Architect 7?
+### Does `@architect/functions` work in Architect 10+?
 
-Yes! It is supported by and forwards compatible in Architect 7, including use with HTTP API Lambda v2.0 payloads.
+Yes! Version 5 is required to work correctly in Architect 10+.
 
 
-### Does `@architect/functions` work in Architect 6?
+### Does `@architect/functions` work in Architect 6 - 9?
 
-Yes! It is supported by and forwards compatible in Architect 6. Additionally, it has been expanded to include [`@tables` support for working with data](/docs/en/reference/project-manifest/tables).
+Absolutely, version 4.x is supported by Arc 6 - 9, including use with HTTP API Lambda v2.0 payloads (introduced in Arc 7). However, version 5+ is incompatible with Arc 6 - 9.
+
 
 ### Will `@architect/functions` continue working in Architect 5?
 
-Yes! `@architect/functions` is fully backward compatible with Architect 5. You can safely update this dependency, and expect related bugs to be patched. **However, it is worth noting that the new `tables()` method is an Architect 6-only feature.**
+Version 4.x remains largely compatible with Architect 5; version 5+ is no longer backward compatible with Architect 5 (support for which officially ended in July of 2021).
 
 ---
 
@@ -720,7 +876,7 @@ As of the release of Architect 6, the **Architect Data module (`@architect/data`
 
 ### Overview
 
-`@architect/data` will no longer be maintained, and upgrading to Architect 6 will likely be a breaking change.
+`@architect/data` will no longer be maintained, and upgrading to Architect 6 will likely be a breaking change for `@architect/data` usage.
 
 
 ### Does `@architect/data` work in Architect 6?
